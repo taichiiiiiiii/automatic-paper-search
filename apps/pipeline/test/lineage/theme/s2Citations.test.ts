@@ -15,6 +15,7 @@ import {
   maybeTruncated,
   readS2ReferencesCache,
   S2_KEYED_INTERVAL_MS,
+  S2_KEYED_MAX_ATTEMPTS,
   S2_KEYLESS_INTERVAL_MS,
   S2_REFERENCES_SCHEMA,
   S2CitationSource,
@@ -231,6 +232,63 @@ describe("S2CitationSource.lookup", () => {
     expect(h.calls).toHaveLength(6);
     h.source.flush();
     expect(existsSync(cachePath)).toBe(false);
+  });
+});
+
+describe("keyed 429 retry (#570)", () => {
+  const long = (sleeps: number[]) => sleeps.filter((ms) => ms >= 1000);
+
+  it("retries keyed 429s past 6 attempts with a short, capped exponential backoff (1,2,4,8,8... s)", async () => {
+    const h = harness((_u, n) => (n <= 8 ? resp(429, null) : resp(200, { data: [GCN_REF] })), {
+      apiKey: "k",
+    });
+    const r = await h.source.lookup(CITING, CITED);
+    expect(r).toMatchObject({ kind: "pair", signals: { found: true } });
+    expect(h.calls).toHaveLength(9);
+    expect(long(h.sleeps)).toEqual([1000, 2000, 4000, 8000, 8000, 8000, 8000, 8000]);
+  });
+
+  it("a keyed 429 still honours a Retry-After hint, and gives up after S2_KEYED_MAX_ATTEMPTS", async () => {
+    const hinted = harness(
+      (_u, n) =>
+        n === 1 ? resp(429, null, { "Retry-After": "7" }) : resp(200, { data: [GCN_REF] }),
+      {
+        apiKey: "k",
+      },
+    );
+    await hinted.source.lookup(CITING, CITED);
+    expect(long(hinted.sleeps)[0]).toBe(7000);
+    const dead = harness(() => resp(429, null), { apiKey: "k" });
+    expect(await dead.source.lookup(CITING, CITED)).toEqual({
+      kind: "no_s2_data",
+      reason: "fetch-failed",
+    });
+    expect(dead.calls).toHaveLength(S2_KEYED_MAX_ATTEMPTS);
+  });
+
+  it("keyed 5xx keeps the 6-attempt budget and 2,4,8 s backoff", async () => {
+    const h = harness(() => resp(503, null), { apiKey: "k" });
+    await h.source.lookup(CITING, CITED);
+    expect(h.calls).toHaveLength(6);
+    expect(long(h.sleeps).slice(0, 3)).toEqual([2000, 4000, 8000]);
+  });
+
+  it("keyless alternating 429/503 keeps the overall-attempt exponent (2,4,8,16,32 s)", async () => {
+    const h = harness((_u, n) => (n % 2 === 1 ? resp(429, null) : resp(503, null)));
+    await h.source.lookup(CITING, CITED);
+    expect(h.calls).toHaveLength(6);
+    expect(h.sleeps.filter((ms) => ms !== S2_KEYLESS_INTERVAL_MS).slice(0, 5)).toEqual([
+      2000, 4000, 8000, 16000, 32000,
+    ]);
+  });
+
+  it("keyless 429 is unchanged: 6 attempts, 2,4,8 s", async () => {
+    const h = harness(() => resp(429, null));
+    await h.source.lookup(CITING, CITED);
+    expect(h.calls).toHaveLength(6);
+    expect(h.sleeps.filter((ms) => ms !== S2_KEYLESS_INTERVAL_MS).slice(0, 3)).toEqual([
+      2000, 4000, 8000,
+    ]);
   });
 });
 
