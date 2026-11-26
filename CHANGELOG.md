@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Changed — identity-aliases の一致テストを O(n) の検査に（#570）
+
+- `packages/core` の agreement テストのうち identity-aliases-v1 の 1 件を、schema から `uniqueItems` だけを外した ajv 検査と、ajv と同じ等しさ（JSON の深い比較、オブジェクトはキー順を問わない）での O(n) の重複検査に替えた（ローカル 17.7 秒 → 0.07 秒）。小さな合成配列で ajv（`uniqueItems` あり）と判定が一致することを新しいテストで固定した。本番の validator・schema・Python の判定記録・公開データは変えていない。
+
 ### Changed — 公開の checkout を全履歴の取得に（#570）
 
 - CI で測ると、runner の浅い（depth 1）checkout が 21〜30 秒、全履歴が 5〜6 秒だった（同じ job で 3 回ずつ交互に）。pages-release の validate・build・deploy・smoke・record と、theme-on-demand の生成 job の checkout を `fetch-depth: 0` にした。検査・ref・権限は変えていない。見込みは公開 1 回あたり最大 約 100 秒の短縮。

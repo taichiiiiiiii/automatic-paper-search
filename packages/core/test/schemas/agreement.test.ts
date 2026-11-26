@@ -20,6 +20,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { auditFixtures, identityCoverage, layoutFor, relLayout } from "../../src/layout/index.js";
 import { getRepoRoot, listSchemaNames, validateArtifact } from "../../src/schemas/index.js";
+import { validateIdentityAliasesFast } from "./support/identityAliasesFastCheck.js";
 
 /**
  * `python-verdicts.json`'s `file` fields were recorded once (frozen
@@ -116,53 +117,58 @@ describe("python-verdicts.json fixture", () => {
 
 describe("ajv vs Python jsonschema agreement", () => {
   for (const testCase of fixture.cases) {
-    // identity-aliases-v1 is a flat `uniqueItems: true` array of 28,300
-    // non-scalar 3-tuples. ajv's uniqueItems check falls back to pairwise
-    // deep-equal for non-scalar items (no fast hash path), which is
-    // algorithmically O(n^2) here and takes several seconds -- a real
-    // cost of this schema/data shape, not a bug, so it gets a longer
-    // per-test timeout instead of a smaller/sampled fixture. 2026-10-11:
-    // ~38k tuples after ACL/ICML 2026 + ICLR 2025 (O(n^2) => ~1.8x); the
-    // promote/validate runner hit the old 30 s cap, so allow 120 s.
-    const timeout = testCase.file.includes("identity-aliases-v1") ? 120_000 : 5_000;
-    it(
-      `${testCase.file} against ${testCase.schema} (python ok=${testCase.ok})`,
-      () => {
-        const absolutePath = resolvePublishedFixturePath(getRepoRoot(), testCase.file);
-        const data = JSON.parse(readFileSync(absolutePath, "utf8"));
-        const result = validateArtifact(testCase.schema, data);
+    // identity-aliases-v1 is a flat `uniqueItems: true` array of ~55k
+    // non-scalar 3-tuples. ajv's uniqueItems check is a pairwise deep-equal
+    // for non-scalar items (O(n^2), 18-39 s on the promote/validate
+    // runners). #570 C: this one case uses a fast equivalent instead (the
+    // schema minus uniqueItems + an O(n) duplicate check under ajv's
+    // equality rule, see ./support/identityAliasesFastCheck.ts), so it
+    // pins "fast check == Python verdict"; identityAliasesFastCheck.test.ts
+    // pins "fast check == ajv with uniqueItems" on small arrays. The
+    // production validator (validateArtifact) is unchanged.
+    const fastIdentityAliases = testCase.schema === "identity-aliases-v1";
+    it(`${testCase.file} against ${testCase.schema} (python ok=${testCase.ok})`, () => {
+      const absolutePath = resolvePublishedFixturePath(getRepoRoot(), testCase.file);
+      const data = JSON.parse(readFileSync(absolutePath, "utf8"));
+      const result = fastIdentityAliases
+        ? (() => {
+            const fast = validateIdentityAliasesFast(data);
+            return {
+              ok: fast.ok,
+              errors: fast.reason ? [{ instancePath: "", message: fast.reason }] : null,
+            };
+          })()
+        : validateArtifact(testCase.schema, data);
 
-        // The frozen Python verdicts for conference lineages were recorded
-        // against the old placeholder/LLM files (mostly invalid). R2-32
-        // regenerates them one edition at a time with the LLM-free edition
-        // builder, which must produce a VALID artifact; the frozen `ok=false`
-        // no longer describes that file, so require validity instead.
-        if (testCase.schema === "lineage-artifact-v1" && isEditionLineage(data)) {
-          if (!result.ok) {
-            const detail = result.errors
-              ?.slice(0, 5)
-              .map((e) => `${e.instancePath || "/"} ${e.message ?? ""}`)
-              .join("; ");
-            throw new Error(`${testCase.file}: edition lineage is invalid (${detail})`);
-          }
-          return;
-        }
-
-        if (result.ok !== testCase.ok) {
-          const ajvDetail = result.errors
+      // The frozen Python verdicts for conference lineages were recorded
+      // against the old placeholder/LLM files (mostly invalid). R2-32
+      // regenerates them one edition at a time with the LLM-free edition
+      // builder, which must produce a VALID artifact; the frozen `ok=false`
+      // no longer describes that file, so require validity instead.
+      if (testCase.schema === "lineage-artifact-v1" && isEditionLineage(data)) {
+        if (!result.ok) {
+          const detail = result.errors
             ?.slice(0, 5)
             .map((e) => `${e.instancePath || "/"} ${e.message ?? ""}`)
             .join("; ");
-          const pyDetail = testCase.sampleErrors.map((e) => `${e.path} ${e.message}`).join("; ");
-          throw new Error(
-            `disagreement for ${testCase.file} vs ${testCase.schema}: ` +
-              `ajv ok=${result.ok} (${ajvDetail ?? "no errors"}) vs python ok=${testCase.ok} (${pyDetail || "no errors"})`,
-          );
+          throw new Error(`${testCase.file}: edition lineage is invalid (${detail})`);
         }
-        expect(result.ok).toBe(testCase.ok);
-      },
-      timeout,
-    );
+        return;
+      }
+
+      if (result.ok !== testCase.ok) {
+        const ajvDetail = result.errors
+          ?.slice(0, 5)
+          .map((e) => `${e.instancePath || "/"} ${e.message ?? ""}`)
+          .join("; ");
+        const pyDetail = testCase.sampleErrors.map((e) => `${e.path} ${e.message}`).join("; ");
+        throw new Error(
+          `disagreement for ${testCase.file} vs ${testCase.schema}: ` +
+            `ajv ok=${result.ok} (${ajvDetail ?? "no errors"}) vs python ok=${testCase.ok} (${pyDetail || "no errors"})`,
+        );
+      }
+      expect(result.ok).toBe(testCase.ok);
+    }, 5_000);
   }
 });
 
