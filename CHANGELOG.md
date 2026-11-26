@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Changed — 全テストを依存順に流さない（`pnpm -r --no-sort`、#570）
+
+- promote の validate・pages-release の validate・その手順を写す rehearsal・tests.yml の全テストを `pnpm -r --no-sort` にした。core のテスト（CI で単独 30〜39 秒）を待たずに api・pipeline・web のテストが始まる。どのパッケージのテストも core の build 出力や他パッケージのテストが作るファイルを読まないことを確認済み。vitest の引数・skip=0 の関門は変えない。4 か所を `r570-test-no-sort.test.ts` で揃えて固定。
+
 ### Changed — 公開の checkout を全履歴の取得に（#570）
 
 - CI で測ると、runner の浅い（depth 1）checkout が 21〜30 秒、全履歴が 5〜6 秒だった（同じ job で 3 回ずつ交互に）。pages-release の validate・build・deploy・smoke・record と、theme-on-demand の生成 job の checkout を `fetch-depth: 0` にした。検査・ref・権限は変えていない。見込みは公開 1 回あたり最大 約 100 秒の短縮。

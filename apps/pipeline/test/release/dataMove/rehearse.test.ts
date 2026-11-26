@@ -27,7 +27,7 @@ describe("rehearseSteps", () => {
       "git -C /some/clone/path -c user.name=p5-rehearsal -c user.email=p5-rehearsal@local commit -q -m p5 rehearsal: apply data move (scratch commit, never pushed)",
       "pnpm exec tsx apps/pipeline/src/release/dataMove/cli.ts verify HEAD~1 HEAD",
       "pnpm --filter @paperpilot/web build",
-      "pnpm -r --if-present test --reporter=default --reporter=json --outputFile.json=.vitest-release-report.json",
+      "pnpm -r --no-sort --if-present test --reporter=default --reporter=json --outputFile.json=.vitest-release-report.json",
       "pnpm exec tsx apps/pipeline/src/release/cli.ts no-skip-gate " +
         "apps/api/.vitest-release-report.json apps/pipeline/.vitest-release-report.json " +
         "apps/web/.vitest-release-report.json packages/core/.vitest-release-report.json",

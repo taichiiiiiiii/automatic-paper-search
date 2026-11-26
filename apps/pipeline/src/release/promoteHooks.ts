@@ -154,7 +154,7 @@ export function validateCommandsFor(kind: PromotionKind, _tree: string): Command
   return [
     ["pnpm", "exec", "biome", "check", "."],
     ["pnpm", "--filter", "@paperpilot/web", "build"],
-    ["pnpm", "-r", "test"],
+    ["pnpm", "-r", "--no-sort", "test"],
     pnpmExecTsx("apps/pipeline/src/lineage/theme/auditThemeSeedsCli.ts"),
     pnpmExecTsx("apps/pipeline/src/lineage/quality/auditLineageQualityCli.ts"),
     pnpmExecTsx("apps/pipeline/src/release/derived/searchIndexCli.ts", ["--check"]),

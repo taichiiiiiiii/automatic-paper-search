@@ -64,7 +64,7 @@ jobs:
         # step). A skip warns loudly instead of being averaged away.
         run: |
           set -o pipefail
-          pnpm -r --if-present test 2>&1 | tee "$RUNNER_TEMP/test-output.txt"
+          pnpm -r --no-sort --if-present test 2>&1 | tee "$RUNNER_TEMP/test-output.txt"
           if grep -qE '[0-9]+ skipped' "$RUNNER_TEMP/test-output.txt"; then
             echo "::warning::some tests skipped in CI — check the test output above"
           fi

@@ -147,7 +147,7 @@ jobs:
         # given (both reporters run; only the json one needs a file).
         run: |
           set -euo pipefail
-          pnpm -r --if-present test --reporter=default --reporter=json --outputFile.json=.vitest-release-report.json
+          pnpm -r --no-sort --if-present test --reporter=default --reporter=json --outputFile.json=.vitest-release-report.json
 
       - name: No skipped tests
         # P5 tier-A review round 3, L1: one explicit report per workspace

@@ -103,7 +103,7 @@ it("validate table (same for both kinds) matches §3's ordered list, built BEFOR
   const expected: Command[] = [
     ["pnpm", "exec", "biome", "check", "."],
     ["pnpm", "--filter", "@paperpilot/web", "build"],
-    ["pnpm", "-r", "test"],
+    ["pnpm", "-r", "--no-sort", "test"],
     ["pnpm", "exec", "tsx", "apps/pipeline/src/lineage/theme/auditThemeSeedsCli.ts"],
     ["pnpm", "exec", "tsx", "apps/pipeline/src/lineage/quality/auditLineageQualityCli.ts"],
     ["pnpm", "exec", "tsx", "apps/pipeline/src/release/derived/searchIndexCli.ts", "--check"],
@@ -127,7 +127,7 @@ it("the web build step precedes `pnpm -r test` in the validate table (M5, explic
     (cmd) => cmd[0] === "pnpm" && cmd[1] === "--filter" && cmd[2] === "@paperpilot/web",
   );
   const testIndex = table.findIndex(
-    (cmd) => cmd[0] === "pnpm" && cmd[1] === "-r" && cmd[2] === "test",
+    (cmd) => cmd[0] === "pnpm" && cmd[1] === "-r" && cmd[3] === "test",
   );
   expect(buildIndex).toBeGreaterThanOrEqual(0);
   expect(testIndex).toBeGreaterThanOrEqual(0);

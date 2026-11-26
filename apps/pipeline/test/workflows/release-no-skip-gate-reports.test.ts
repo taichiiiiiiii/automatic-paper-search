@@ -57,7 +57,7 @@ describe("pages-release.yml no-skip gate gets one explicit report per test packa
 
   it("the test step runs exactly the command rehearse runs", () => {
     const rehearseTest = rehearseSteps("/clone", packageDirs).find(
-      (argv) => argv.slice(0, 4).join(" ") === "pnpm -r --if-present test",
+      (argv) => argv.slice(0, 5).join(" ") === "pnpm -r --no-sort --if-present test",
     );
     expect(rehearseTest).toBeDefined();
     expect(commandLines(stepRun("Full test suite with no skips"))).toEqual([

@@ -113,6 +113,7 @@ export function rehearseSteps(
     [
       "pnpm",
       "-r",
+      "--no-sort",
       "--if-present",
       "test",
       "--reporter=default",
