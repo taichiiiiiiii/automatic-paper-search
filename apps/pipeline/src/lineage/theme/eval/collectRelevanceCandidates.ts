@@ -57,8 +57,10 @@ const WORK_SELECT = [
   "keywords",
 ].join(",");
 
-interface Args {
+export interface Args {
   cacheDir: string;
+  /** Still a required flag (unchanged CLI), but no longer sent: OpenAlex
+   * ignores `mailto` since the polite pool was retired (#558). */
   mailto: string;
   out: string;
   cites: number;
@@ -82,18 +84,19 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 let calls = 0;
 let cacheHits = 0;
 
-async function cachedGet(url: string, args: Args): Promise<unknown> {
+export async function cachedGet(url: string, args: Args): Promise<unknown> {
   const key = createHash("sha1").update(url).digest("hex");
   const file = join(args.cacheDir, `${key}.json`);
   if (existsSync(file)) {
     cacheHits += 1;
     return JSON.parse(readFileSync(file, "utf8"));
   }
-  const full = `${url}${url.includes("?") ? "&" : "?"}mailto=${encodeURIComponent(args.mailto)}`;
+  // #558: no `mailto` (OpenAlex retired the polite pool and ignores it). The
+  // cache key above was always the URL without it, so existing entries hit.
   for (let attempt = 0; attempt < 5; attempt++) {
     await sleep(150); // polite: < 10 req/s
     calls += 1;
-    const resp = await fetch(full, {
+    const resp = await fetch(url, {
       headers: { "User-Agent": "PaperPilot-eval/0.1", ...openalexAuthHeader() },
     });
     if (resp.status === 200) {

@@ -6,6 +6,10 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Changed — OpenAlex に `mailto` を送らない（#558）
+
+- OpenAlex は polite pool を廃止し `mailto` を無視するので、OpenAlex への要求 6 か所（収集の `OpenAlexSource`、会議の家系図、テーマの `openalexFetch`・`mapS2PapersToOpenalex`、評価用の 2 道具）から連絡先メールを外した。取得結果・ディスクのキャッシュのキー（評価用 `apiRelationsCli` は従来の URL でキーを作る）・Crossref など他所へ送る連絡先は変えていない。
+
 ### Changed — 公開の checkout を全履歴の取得に（#570）
 
 - CI で測ると、runner の浅い（depth 1）checkout が 21〜30 秒、全履歴が 5〜6 秒だった（同じ job で 3 回ずつ交互に）。pages-release の validate・build・deploy・smoke・record と、theme-on-demand の生成 job の checkout を `fetch-depth: 0` にした。検査・ref・権限は変えていない。見込みは公開 1 回あたり最大 約 100 秒の短縮。

@@ -129,8 +129,8 @@ describe("OpenAlexSource.fetch — HTTP failure contracts (COL-07/10)", () => {
   });
 });
 
-describe("OpenAlexSource — polite pool email", () => {
-  it("adds the email to mailto when configured", async () => {
+describe("OpenAlexSource — contact email (#558: polite pool retired)", () => {
+  it("does not send mailto even when an email is configured", async () => {
     const fetchImpl = vi.fn().mockResolvedValue(resp(200, { results: [] }));
     await src(fetchImpl, "me@example.com").fetch({
       keywords: ["x"],
@@ -139,7 +139,9 @@ describe("OpenAlexSource — polite pool email", () => {
       maxResults: 5,
     });
     const url = fetchImpl.mock.calls[0]?.[0] as string;
-    expect(queryParam(url, "mailto")).toBe("me@example.com");
+    expect(queryParam(url, "mailto")).toBeNull();
+    expect(url).not.toContain("me%40example.com");
+    expect(url).not.toContain("me@example.com");
   });
 
   it("omits mailto with no email configured", async () => {

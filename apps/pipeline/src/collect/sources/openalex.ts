@@ -50,6 +50,8 @@ export interface OpenAlexSourceDeps {
    * `budgetGate.wrap(fetchImpl)`; its summary line is logged after each
    * `fetch()`. Omitted = keyless, unmetered (tests, library callers). */
   budgetGate?: OpenAlexGate | null;
+  /** Accepted for compatibility but no longer sent: OpenAlex retired the
+   * `mailto` polite pool and ignores the parameter (#558). */
   email?: string | null;
   sleep?: (ms: number) => Promise<void>;
   now?: () => number;
@@ -65,14 +67,12 @@ export interface SearchOutcome {
 export class OpenAlexSource implements Source {
   readonly name = "openalex";
   private readonly limiter: RateLimiter;
-  private readonly email: string | null;
   private readonly httpDeps: OpenAlexSourceDeps;
   private readonly gate: OpenAlexGate | null;
 
   constructor(config: OpenAlexSourceConfig, deps: OpenAlexSourceDeps) {
     const delay = config.delaySeconds ?? 1.0;
     this.limiter = new RateLimiter(delay, { now: deps.now, sleep: deps.sleep });
-    this.email = deps.email ?? null;
     this.gate = deps.budgetGate ?? null;
     this.httpDeps =
       this.gate === null ? deps : { ...deps, fetchImpl: this.gate.wrap(deps.fetchImpl) };
@@ -122,7 +122,6 @@ export class OpenAlexSource implements Source {
       filter: `from_publication_date:${sinceDate}`,
       sort: "publication_date:desc",
     };
-    if (this.email) params["mailto"] = this.email;
 
     const resp = await requestWithRetry(
       { method: "GET", url: `${OPENALEX_BASE}/works`, params },

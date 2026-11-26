@@ -291,12 +291,13 @@ function queryLabel(params: Record<string, string | number | boolean | undefined
  */
 async function get(
   params: Record<string, string | number | boolean | undefined>,
-  options: { email?: string | null },
+  // `email` is no longer sent: OpenAlex retired the `mailto` polite pool and
+  // ignores it (#558); the option stays so callers keep compiling.
+  _options: { email?: string | null },
   deps: OpenAlexDeps,
 ): Promise<Record<string, unknown>> {
-  const withEmail = options.email ? { ...params, mailto: options.email } : params;
   const resp = (await requestWithRetry(
-    { method: "GET", url: OPENALEX_WORKS_URL, params: withEmail, timeoutMs: 20_000 },
+    { method: "GET", url: OPENALEX_WORKS_URL, params, timeoutMs: 20_000 },
     deps,
   )) as OpenAlexResponse | null;
   if (resp === null || resp.status !== 200) {
