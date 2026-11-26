@@ -36,7 +36,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(HERE, "..", "..", "..", "..", "..");
 export const MAX_GROUP_DETAIL_FETCHES = 10;
 export const EXIT_SOURCE_BLOCKED = 3;
-const USER_AGENT = "PaperPilot/1.0 (+https://paperpilot.pages.dev; new-edition watcher)";
+const USER_AGENT = "PaperPilot/1.0 (+https://papergraph.fyi; new-edition watcher)";
 
 export interface GroupsCliDeps {
   fetchJson: GroupsFetch;

@@ -168,7 +168,7 @@ export async function fetchHfPaper(
     {
       method: "GET",
       url: `${HF_PAPERS_API}/${arxivId}`,
-      headers: { "User-Agent": "PaperPilot/0.1 (+https://paperpilot.pages.dev)" },
+      headers: { "User-Agent": "PaperPilot/0.1 (+https://papergraph.fyi)" },
       timeoutMs: 20_000,
     },
     deps,

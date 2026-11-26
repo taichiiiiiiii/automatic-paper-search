@@ -21,7 +21,12 @@
  * back the final `*.pages.dev` URL or custom domain -- update this one
  * constant then; nothing else in the codebase hard-codes the origin.
  */
-export const PUBLIC_ORIGIN = "https://paperpilot.pages.dev";
+export const PUBLIC_ORIGIN = "https://papergraph.fyi";
+
+/** #490: the project's own `*.pages.dev` alias. It keeps serving the same
+ * build (old links work); canonical URLs, sitemap and feeds name
+ * {@link PUBLIC_ORIGIN}. */
+export const PAGES_DEV_ORIGIN = "https://paperpilot.pages.dev";
 
 /**
  * Cloudflare Pages project name (design doc §7.4 Phase W / P0-1;
