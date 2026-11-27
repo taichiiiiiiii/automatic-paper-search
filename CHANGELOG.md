@@ -559,6 +559,7 @@ SPECTER2 Embedding (a lighter MiniLM alternative is provided instead).
 - `.github/workflows/publish.yml` — PyPI trusted-publisher on release.
 - `.github/workflows/collect.yml` — daily cron at 22:00 UTC (requires
   PAT with `workflow` scope; tracked in Issue #14).
+  Note: collect.yml was never committed; collection later landed as `collect-weekly.yml` / `collect-daily-watch.yml` (5cae27ce), now dispatch-only (#245).
 
 #### CLI
 - `python -m paperpilot.collector` — main run.
