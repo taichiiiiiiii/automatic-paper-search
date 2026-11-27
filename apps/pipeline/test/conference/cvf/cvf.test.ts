@@ -6,7 +6,11 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { parseDetail, reformatAuthor } from "../../../src/conference/cvf/detail.js";
+import {
+  extractAbstractHtml,
+  parseDetail,
+  reformatAuthor,
+} from "../../../src/conference/cvf/detail.js";
 import { collect, fetchListing } from "../../../src/conference/cvf/fetch.js";
 import { detailPaths, parseListingEntries } from "../../../src/conference/cvf/listing.js";
 import { runCvfMain } from "../../../src/conference/cvf/main.js";
@@ -580,6 +584,30 @@ ${abstractDiv}
   it("(f') a flat abstract is extracted exactly as before", () => {
     const row = parseDetail(page('<div id="abstract">\n   Flat  text.\n</div>'), "u", "CVPR");
     expect(row!.abstract).toBe("Flat text.");
+  });
+
+  it("keeps attributes on the abstract div and does not count <divider>-like tags", () => {
+    const row = parseDetail(
+      page('<div id="abstract" class="abs">A <divider>b</divider> <div\tclass="x">c</div> d</div>'),
+      "u",
+      "CVPR",
+    );
+    expect(row!.abstract).toBe("A b c d");
+  });
+
+  it("a malformed '<div' without '>' does not swallow the close tag (old result kept)", () => {
+    const row = parseDetail(page('<div id="abstract">Text <div\n</div> tail'), "u", "CVPR");
+    expect(row!.abstract).toBe("Text <div");
+  });
+
+  it("many unterminated '<div' tags are scanned in linear time", () => {
+    // Targets the div-matching scan itself; the shared stripTags step is
+    // unchanged by #345 and out of scope here.
+    const html = page(`<div id="abstract">x${"<div ".repeat(80_000)}</div>`);
+    const t0 = performance.now();
+    const inner = extractAbstractHtml(html);
+    expect(performance.now() - t0).toBeLessThan(1_000);
+    expect(inner).toBe(`x${"<div ".repeat(80_000)}`);
   });
 
   it("(g) an abstract div that never closes stays empty", () => {

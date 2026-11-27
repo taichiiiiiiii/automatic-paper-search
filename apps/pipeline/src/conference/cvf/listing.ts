@@ -10,9 +10,28 @@ function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+/**
+ * Optional `https://openaccess.thecvf.com` (or `http:` / protocol-relative)
+ * prefix of a listing href. Only this host is accepted: an absolute link to
+ * any other host never matches, because the path must follow immediately.
+ */
+const CVF_HOST_PREFIX = "(?:(?:https?:)?//openaccess\\.thecvf\\.com)?";
+/** Optional `?query` and/or `#fragment` after the path, up to the closing quote. */
+const QUERY_FRAGMENT = '(?:[?#][^"]*)?';
+
+/**
+ * Pattern for one href value pointing at `/content/<cvfId>/<kind>/….<ext>`,
+ * capturing only the relative path (#345 item 3: links may be absolute or
+ * carry a query/fragment; all forms normalise to the relative path that
+ * today's relative links produce, so de-duplication and URLs stay the same).
+ */
+function hrefPathPattern(cvfId: string, kind: "html" | "papers", ext: "html" | "pdf"): string {
+  return `${CVF_HOST_PREFIX}(/content/${escapeRegExp(cvfId)}/${kind}/[^"?#]+?\\.${ext})${QUERY_FRAGMENT}"`;
+}
+
 /** Ordered, de-duplicated detail-page paths for a CVF year listing. */
 export function detailPaths(listingHtml: string, cvfId: string): string[] {
-  const re = new RegExp(`href="(/content/${escapeRegExp(cvfId)}/html/[^"]+?\\.html)"`, "g");
+  const re = new RegExp(`href="${hrefPathPattern(cvfId, "html", "html")}`, "g");
   const seen = new Set<string>();
   const out: string[] = [];
   for (const m of listingHtml.matchAll(re)) {
@@ -43,10 +62,9 @@ export function parseListingEntries(
   listingHtml: string,
   cvfId: string,
 ): { entries: CvfListingEntry[]; blockCount: number; malformed: number } {
-  const id = escapeRegExp(cvfId);
-  const titleRe = new RegExp(`<a href="(/content/${id}/html/[^"]+?\\.html)">([\\s\\S]*?)</a>`);
+  const titleRe = new RegExp(`<a href="${hrefPathPattern(cvfId, "html", "html")}>([\\s\\S]*?)</a>`);
   const authorRe = /<input type="hidden" name="query_author" value="([^"]*)">/g;
-  const pdfRe = new RegExp(`href="(/content/${id}/papers/[^"]+?\\.pdf)"`);
+  const pdfRe = new RegExp(`href="${hrefPathPattern(cvfId, "papers", "pdf")}`);
   const blocks = listingHtml.split('<dt class="ptitle">').slice(1);
   const entries: CvfListingEntry[] = [];
   const seen = new Set<string>();

@@ -7,10 +7,37 @@ import { venueTier } from "../../collect/signals/venue.js";
 import type { ConferenceRow } from "../shared/csvColumns.js";
 import { htmlUnescape, stripTagsUnescapeCollapse } from "../shared/pyText.js";
 
-const ABSTRACT_RE = /<div id="abstract"[^>]*>([\s\S]*?)<\/div>/;
+const ABSTRACT_OPEN_RE = /<div id="abstract"[^>]*>/;
+/** Opening `<div …>` / `<div>` or closing `</div>` tags, in document order. */
+// `[^<>]*` (not `[^>]*`): a malformed `<div` with no `>` must not swallow the
+// following `</div>` (keeps the old first-`</div>` result) nor make each
+// unterminated `<div` rescan to the end of the page (quadratic time).
+const DIV_TAG_RE = /<div(?=[\s>/])[^<>]*>|<\/div>/g;
 const TITLE_RE = /<meta\s+name="citation_title"\s+content="(.*?)"/i;
 const AUTHOR_RE = /<meta\s+name="citation_author"\s+content="(.*?)"/gi;
 const PDF_RE = /<meta\s+name="citation_pdf_url"\s+content="(.*?)"/i;
+
+/**
+ * Inner HTML of `<div id="abstract">` up to its MATCHING `</div>` (#345 item
+ * 1): nested `<div>…</div>` inside the abstract are counted, so the text no
+ * longer stops at the first inner close tag. Returns `null` when the abstract
+ * div is missing or never closes — the caller records an empty abstract
+ * rather than guessing where it ends. With no nested div this is exactly the
+ * old lazy match up to the first `</div>`.
+ */
+export function extractAbstractHtml(detailHtml: string): string | null {
+  const open = ABSTRACT_OPEN_RE.exec(detailHtml);
+  if (!open) return null;
+  const start = open.index + open[0].length;
+  const tags = new RegExp(DIV_TAG_RE.source, "g");
+  tags.lastIndex = start;
+  let depth = 1;
+  for (let m = tags.exec(detailHtml); m !== null; m = tags.exec(detailHtml)) {
+    depth += m[0] === "</div>" ? -1 : 1;
+    if (depth === 0) return detailHtml.slice(start, m.index);
+  }
+  return null;
+}
 
 /** Highwire gives "Last, First"; render "First Last" to match other catalogs. */
 export function reformatAuthor(name: string): string {
@@ -41,7 +68,7 @@ export function parseDetail(
   const authors = authorNames.join("; ");
 
   const pdfM = PDF_RE.exec(detailHtml);
-  const absM = ABSTRACT_RE.exec(detailHtml);
+  const absHtml = extractAbstractHtml(detailHtml);
 
   return {
     title,
@@ -51,7 +78,7 @@ export function parseDetail(
     citation_count: 0,
     github_stars: 0,
     arxiv_id: "",
-    abstract: absM ? stripTagsUnescapeCollapse(absM[1] ?? "") : "",
+    abstract: absHtml === null ? "" : stripTagsUnescapeCollapse(absHtml),
     url: detailUrl,
     pdf_url: pdfM ? htmlUnescape(pdfM[1] ?? "") : "",
     comment: "",
