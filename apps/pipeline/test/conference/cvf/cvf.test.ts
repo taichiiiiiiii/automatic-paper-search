@@ -6,9 +6,13 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { parseDetail, reformatAuthor } from "../../../src/conference/cvf/detail.js";
+import {
+  extractAbstractHtml,
+  parseDetail,
+  reformatAuthor,
+} from "../../../src/conference/cvf/detail.js";
 import { collect, fetchListing } from "../../../src/conference/cvf/fetch.js";
-import { detailPaths } from "../../../src/conference/cvf/listing.js";
+import { detailPaths, parseListingEntries } from "../../../src/conference/cvf/listing.js";
 import { runCvfMain } from "../../../src/conference/cvf/main.js";
 
 const LISTING = `
@@ -487,5 +491,134 @@ describe("runCvfMain (CNF-03 / CNF-04)", () => {
     );
     expect(rc).toBe(0);
     expect(existsSync(oralMd)).toBe(false);
+  });
+});
+
+// #345 (items 1 and 3): absolute / query / fragment hrefs on the year listing
+// normalise to the same relative path as today's relative hrefs, other hosts
+// and other editions are ignored, and the abstract extractor follows nested
+// <div>s to the matching close tag (an unclosed abstract stays empty).
+describe("#345 listing href forms", () => {
+  const REL = "/content/CVPR2025/html/Xiao_Det_paper.html";
+  const PDF = "/content/CVPR2025/papers/Xiao_Det_paper.pdf";
+  const block = (href: string, pdfHref: string) =>
+    `<dt class="ptitle"><a href="${href}">Det</a></dt>\n<dd><form><input type="hidden" name="query_author" value="Bohan Xiao"></form>` +
+    `<a href="${pdfHref}">pdf</a></dd>\n`;
+  const forms: Array<[string, string, string]> = [
+    [
+      "(a) absolute URL",
+      `https://openaccess.thecvf.com${REL}`,
+      `https://openaccess.thecvf.com${PDF}`,
+    ],
+    ["(b) query string", `${REL}?ref=listing`, `${PDF}?download=1`],
+    ["(c) fragment", `${REL}#abstract`, `${PDF}#page=2`],
+    [
+      "(a+b+c) absolute with query and fragment",
+      `http://openaccess.thecvf.com${REL}?a=1#x`,
+      `//openaccess.thecvf.com${PDF}#p`,
+    ],
+  ];
+  for (const [name, href, pdfHref] of forms) {
+    it(`${name}: detailPaths and parseListingEntries return the relative path`, () => {
+      const html = block(href, pdfHref);
+      expect(detailPaths(html, "CVPR2025")).toEqual([REL]);
+      const { entries, malformed, blockCount } = parseListingEntries(html, "CVPR2025");
+      expect({ blockCount, malformed }).toEqual({ blockCount: 1, malformed: 0 });
+      expect(entries).toEqual([{ path: REL, title: "Det", authors: ["Bohan Xiao"], pdfPath: PDF }]);
+    });
+  }
+
+  it("relative hrefs are returned unchanged (today's input)", () => {
+    const { entries } = parseListingEntries(block(REL, PDF), "CVPR2025");
+    expect(entries).toEqual([{ path: REL, title: "Det", authors: ["Bohan Xiao"], pdfPath: PDF }]);
+  });
+
+  it("(d) ignores other hosts and other CVF editions", () => {
+    const other = [
+      `https://evil.example.com${REL}`,
+      `https://openaccess.thecvf.com.evil.example${REL}`,
+      "https://openaccess.thecvf.com/content/ICCV2025/html/Other_paper.html",
+      "/content/ICCV2025/html/Other_paper.html",
+    ];
+    const html = other.map((h) => `<a href="${h}">x</a>`).join("\n");
+    expect(detailPaths(html, "CVPR2025")).toEqual([]);
+    const listing = other.map((h) => block(h, `https://evil.example.com${PDF}`)).join("");
+    const parsed = parseListingEntries(listing, "CVPR2025");
+    expect(parsed.entries).toEqual([]);
+    expect(parsed.malformed).toBe(other.length);
+    // An off-host PDF link next to a good title is not taken either.
+    expect(
+      parseListingEntries(block(REL, `https://evil.example.com${PDF}`), "CVPR2025").entries[0]
+        ?.pdfPath,
+    ).toBe("");
+  });
+
+  it("(e) the same paper linked relatively and absolutely counts once", () => {
+    const html = `${block(REL, PDF)}${block(`https://openaccess.thecvf.com${REL}?x=1`, PDF)}`;
+    expect(detailPaths(html, "CVPR2025")).toEqual([REL]);
+    const { entries, malformed } = parseListingEntries(html, "CVPR2025");
+    expect(malformed).toBe(0);
+    expect(entries.map((e) => e.path)).toEqual([REL]);
+  });
+});
+
+describe("#345 abstract with nested divs", () => {
+  const page = (abstractDiv: string) => `<html><head>
+<meta name="citation_title" content="Det" />
+<meta name="citation_author" content="Xiao, Bohan" />
+</head><body>
+${abstractDiv}
+<div id="footer">footer text</div></body></html>`;
+
+  it("(f) takes the whole abstract across nested <div>...</div>", () => {
+    const row = parseDetail(
+      page(
+        '<div id="abstract">\nFirst part. <div class="eq">x = y</div> Second part. <div><div>deep</div></div> End.\n</div>',
+      ),
+      "u",
+      "CVPR",
+    );
+    expect(row!.abstract).toBe("First part. x = y Second part. deep End.");
+  });
+
+  it("(f') a flat abstract is extracted exactly as before", () => {
+    const row = parseDetail(page('<div id="abstract">\n   Flat  text.\n</div>'), "u", "CVPR");
+    expect(row!.abstract).toBe("Flat text.");
+  });
+
+  it("keeps attributes on the abstract div and does not count <divider>-like tags", () => {
+    const row = parseDetail(
+      page('<div id="abstract" class="abs">A <divider>b</divider> <div\tclass="x">c</div> d</div>'),
+      "u",
+      "CVPR",
+    );
+    expect(row!.abstract).toBe("A b c d");
+  });
+
+  it("a malformed '<div' without '>' does not swallow the close tag (old result kept)", () => {
+    const row = parseDetail(page('<div id="abstract">Text <div\n</div> tail'), "u", "CVPR");
+    expect(row!.abstract).toBe("Text <div");
+  });
+
+  it("many unterminated '<div' tags are scanned in linear time", () => {
+    // Targets the div-matching scan itself; the shared stripTags step is
+    // unchanged by #345 and out of scope here.
+    const html = page(`<div id="abstract">x${"<div ".repeat(80_000)}</div>`);
+    const t0 = performance.now();
+    const inner = extractAbstractHtml(html);
+    expect(performance.now() - t0).toBeLessThan(1_000);
+    expect(inner).toBe(`x${"<div ".repeat(80_000)}`);
+  });
+
+  it("(g) an abstract div that never closes stays empty", () => {
+    const unclosed = `<html><head><meta name="citation_title" content="Det" /></head><body>
+<div id="abstract">Text that never closes`;
+    expect(parseDetail(unclosed, "u", "CVPR")!.abstract).toBe("");
+  });
+
+  it("(g') an abstract whose nested div closes but the abstract itself does not stays empty", () => {
+    const unclosed = `<html><head><meta name="citation_title" content="Det" /></head><body>
+<div id="abstract">Text <div>inner</div> and no outer close`;
+    expect(parseDetail(unclosed, "u", "CVPR")!.abstract).toBe("");
   });
 });
