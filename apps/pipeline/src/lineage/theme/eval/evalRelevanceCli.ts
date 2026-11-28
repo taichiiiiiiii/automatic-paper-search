@@ -24,6 +24,10 @@
  *    leave-one-theme-out ("loto": tuned on the other three themes);
  *  - combinations.
  * Seeds are excluded from the scores: the gate never judges them.
+ *
+ * Exit codes: 0 = done; 2 = no candidate has OpenAlex concepts (#558: the
+ * concept row would otherwise read TP 0 / FP 0 as if measured; the table
+ * is still printed, the row marked データなし); 1 = unexpected error.
  */
 
 import { readFileSync } from "node:fs";
@@ -343,13 +347,55 @@ function oaKeyword(ctx: Ctx): Method {
   };
 }
 
+const CONCEPT_ROW = "OA concept (L>=2) shared by subject seeds";
+
+/** #558: OpenAlex `concepts` is deprecated and frozen, so a candidate
+ * may carry `concepts: []` or no key at all. Both count as "no data"
+ * (never a TypeError). */
+function conceptsOf(c: unknown): Concept[] {
+  const v = (c as { concepts?: unknown } | null)?.concepts;
+  return Array.isArray(v) ? (v as Concept[]) : [];
+}
+
+export interface ConceptCoverage {
+  /** Candidates (seeds included) with a non-empty `concepts` array. */
+  usable: number;
+  /** All candidates of all themes. */
+  total: number;
+}
+
+/** How many labelled candidates carry usable OpenAlex concepts. */
+export function conceptCoverage(fx: {
+  themes: Record<string, { candidates: unknown[] }>;
+}): ConceptCoverage {
+  let usable = 0;
+  let total = 0;
+  for (const t of Object.values(fx.themes)) {
+    for (const c of t.candidates) {
+      total++;
+      if (conceptsOf(c).length > 0) usable++;
+    }
+  }
+  return { usable, total };
+}
+
+/** Reason to fail the run when no candidate has concepts (the concept
+ * row would read TP 0 / FP 0 and look like a real measurement); null
+ * when at least one candidate has them. */
+export function conceptCoverageFailure(cov: ConceptCoverage): string | null {
+  if (cov.usable > 0) return null;
+  return `no candidate has OpenAlex concepts (0/${cov.total}); the "${CONCEPT_ROW}" row has no data`;
+}
+
 function oaConcept(ctx: Ctx): Method {
   return (slug, c) => {
     const seeds = subjectSeeds(ctx, slug);
     const count = new Map<string, number>();
     for (const s of seeds) {
       for (const k of new Set(
-        s.concepts.filter((x) => x[2] >= 2 && x[3] >= 0.4).map((x) => x[0]),
+        conceptsOf(s)
+          .filter((x) => x[2] >= 2 && x[3] >= 0.4)
+          .map((x) => x[0]),
       )) {
         count.set(k, (count.get(k) ?? 0) + 1);
       }
@@ -357,7 +403,7 @@ function oaConcept(ctx: Ctx): Method {
     const set = new Set(
       [...count].filter(([, n]) => n >= Math.ceil(seeds.length / 2)).map(([k]) => k),
     );
-    return c.concepts.some((x) => x[2] >= 2 && x[3] >= 0.4 && set.has(x[0]));
+    return conceptsOf(c).some((x) => x[2] >= 2 && x[3] >= 0.4 && set.has(x[0]));
   };
 }
 
@@ -556,8 +602,14 @@ export function runEval(fx: Fixture, scores: Scores): { rows: Row[]; ctx: Ctx } 
     ),
   );
   rows.push(rowFixed(ctx, "b openalex", "OA keyword = theme keyword", oaKeyword(ctx)));
+  const cov = conceptCoverage(fx);
   rows.push(
-    rowFixed(ctx, "b openalex", "OA concept (L>=2) shared by subject seeds", oaConcept(ctx)),
+    rowFixed(
+      ctx,
+      "b openalex",
+      cov.usable > 0 ? CONCEPT_ROW : `${CONCEPT_ROW} — データなし (concepts 0/${cov.total})`,
+      oaConcept(ctx),
+    ),
   );
   rows.push(rowFixed(ctx, "b openalex", "OA primary subfield = seed subfield", oaSubfield(ctx)));
   for (const model of Object.keys(scores.models)) {
@@ -782,6 +834,13 @@ async function main(argv: string[]): Promise<number> {
   const fx = JSON.parse(readFileSync(FIXTURE, "utf8")) as Fixture;
   const scores = JSON.parse(readFileSync(SCORES, "utf8")) as Scores;
   const { rows, ctx } = runEval(fx, scores);
+  // #558: decided before any output branch, so `--json` cannot exit 0
+  // on a concept row without data either. 2 = guard, 1 = exception.
+  const cov = conceptCoverage(fx);
+  process.stderr.write(`concepts coverage: ${cov.usable}/${cov.total} candidates usable\n`);
+  const conceptFailure = conceptCoverageFailure(cov);
+  if (conceptFailure) process.stderr.write(`error: ${conceptFailure}\n`);
+  const status = conceptFailure ? 2 : 0;
   if (argv.includes("--embed")) {
     const t0 = Date.now();
     const embedder = new CachedTopicEmbedder(
@@ -815,7 +874,7 @@ async function main(argv: string[]): Promise<number> {
   }
   if (argv.includes("--json")) {
     process.stdout.write(`${JSON.stringify(rows, null, 1)}\n`);
-    return 0;
+    return status;
   }
   const n = Object.values(fx.themes).map((t) => {
     const c = t.candidates.filter((x) => !isSeed(x));
@@ -843,7 +902,7 @@ async function main(argv: string[]): Promise<number> {
       `\n${failures(ctx, "recommended: (terms AND z>=0) OR z>=1.0 [bge-small subject_terms]", rec)}\n`,
     );
   }
-  return 0;
+  return status;
 }
 
 if (isMain(import.meta.url)) {
