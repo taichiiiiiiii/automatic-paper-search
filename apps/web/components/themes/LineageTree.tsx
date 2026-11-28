@@ -138,14 +138,32 @@ function fitZoom(boxWidth: number, treeWidth: number): number {
 }
 
 /**
- * #521 U6: the 選択中 bar. From `sm` up it is sticky to the viewport bottom so a
- * card click always shows its result on screen (the 70vh tree box pushes the
- * in-flow bar below the fold at 1280x800). It gets an opaque copy of the
- * `bg-accent/5` tint there because it may sit over the tree. Below `sm` the bar
- * is unchanged (in flow, translucent tint).
+ * #521 U6: the 選択中 bar. From `sm` up it sits in a zero-height sticky slot at
+ * the top of the tree box (#545 follow-up: pinned to the viewport bottom it
+ * covered 34px of the card straddling the bottom edge), so a card click always
+ * shows its result on screen without moving anything. It gets an opaque copy
+ * of the `bg-accent/5` tint there because it sits over the tree. Below `sm`
+ * the bar is unchanged (in flow under the tree, translucent tint).
  */
 export const SELECTED_PAPER_BAR_CLASS =
-  "mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md border border-accent bg-accent/5 px-3 py-2 text-xs text-ink sm:sticky sm:bottom-2 sm:z-20 sm:bg-[color-mix(in_oklab,var(--color-accent)_5%,var(--color-bg))] sm:shadow-md";
+  "mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md border border-accent bg-accent/5 px-3 py-2 text-xs text-ink sm:mx-2 sm:mt-0 sm:bg-[color-mix(in_oklab,var(--color-accent)_5%,var(--color-bg))] sm:shadow-md";
+
+/** #545 follow-up (Q): from `sm` up the bar is pinned to the TOP of the tree box. */
+const WIDE_BAR_QUERY = "(min-width: 640px)";
+function useWideBar(): boolean {
+  const [wide, setWide] = useState(false);
+  // Layout effect: decided before the first paint, so a page opened with
+  // ?focus= on a wide screen never shows the bar under the tree for a frame.
+  useLayoutEffect(() => {
+    if (typeof window.matchMedia !== "function") return;
+    const mq = window.matchMedia(WIDE_BAR_QUERY);
+    const sync = () => setWide(mq.matches);
+    sync();
+    mq.addEventListener?.("change", sync);
+    return () => mq.removeEventListener?.("change", sync);
+  }, []);
+  return wide;
+}
 
 // Tailwind's build-time scanner only picks up class names it can see as
 // complete literal strings in the source -- a template-interpolated
@@ -295,6 +313,7 @@ export function LineageTree({
     setSelectedPaperId(id);
     setPathToId((cur) => (cur !== null && cur === id ? null : cur));
   }, []);
+  const wideBar = useWideBar();
 
   // ---- Filters (search / year range / relation chips) -----------------
   const [searchQuery, setSearchQuery] = useState(() => urlState.searchQuery ?? "");
@@ -959,8 +978,14 @@ export function LineageTree({
     [artifact.nodes, artifact.root, permalinkRaw],
   );
   const scrolledToPermalinkRef = useRef(false);
+  // #545 follow-up: only the id the page was OPENED with is a scroll target.
+  // A card click writes `?focus=` back into the URL, and re-running this
+  // effect for it re-centred the tree box on the clicked card (157px at
+  // 1280x800, sometimes pushing the card off screen).
+  const mountPermalinkRef = useRef(permalinkRaw);
   useEffect(() => {
     if (!permalinkRaw || !permalinkFocus || scrolledToPermalinkRef.current) return;
+    if (permalinkRaw !== mountPermalinkRef.current) return;
     // Wait for the measured wrap (positions move when the cap changes).
     if (treeBoxWidth === null) return;
     const container = scrollRef.current;
@@ -1133,6 +1158,21 @@ export function LineageTree({
   const zoomPct = Math.round(zoom * 100);
   const railW = Math.round(
     Math.min(Math.max(46 * zoom, 40), (YEAR_LABEL_W + PADDING / 2 - 4) * zoom),
+  );
+
+  const selectedBar = selectedPaperId && neighbors && nodeById.get(selectedPaperId) && (
+    <p role="status" className={SELECTED_PAPER_BAR_CLASS} data-selected-paper-bar>
+      <span className="text-ink-subtle">選択中:</span>
+      <strong className="min-w-0 break-words font-medium">
+        {String(nodeById.get(selectedPaperId)?.title || selectedPaperId)}
+      </strong>
+      <span className="text-ink-muted">
+        土台 {neighbors.prior.length} 本・発展 {neighbors.derivative.length} 本
+      </span>
+      <a href="#paper-neighbors-title" className="text-accent-strong underline">
+        一覧を見る
+      </a>
+    </p>
   );
 
   return (
@@ -1582,6 +1622,15 @@ export function LineageTree({
           </button>
         </div>
         <div className="relative" ref={treeBoxRef}>
+          {/* #545 follow-up (Q): on wide screens the 選択中 bar sits at the top of the
+              tree box and stays at the viewport top while the box is scrolled past
+              (sticky, zero height so nothing below it moves). Phones keep the
+              in-flow bar under the tree. */}
+          {wideBar && selectedBar && (
+            <div className="sticky top-2 z-20 h-0" data-selected-paper-bar-slot>
+              {selectedBar}
+            </div>
+          )}
           {/* Year labels pinned to the left edge: the in-graph labels scroll
             away when the tree is panned sideways (mobile). Moved with an SVG
             `transform` attribute, never an inline style (CSP). */}
@@ -2087,25 +2136,7 @@ export function LineageTree({
         )}
       </div>
 
-      {/* #521 U6: on wide screens the tree box (70vh) plus the toolbar push this bar
-          below the fold, so a click showed no visible reaction. From `sm` up it is
-          sticky to the viewport bottom: it stays in flow when it is already on
-          screen and only pins while its flow position is below the fold. The page
-          never scrolls and nothing above it moves. Phones keep the in-flow bar. */}
-      {selectedPaperId && neighbors && nodeById.get(selectedPaperId) && (
-        <p role="status" className={SELECTED_PAPER_BAR_CLASS} data-selected-paper-bar>
-          <span className="text-ink-subtle">選択中:</span>
-          <strong className="min-w-0 break-words font-medium">
-            {String(nodeById.get(selectedPaperId)?.title || selectedPaperId)}
-          </strong>
-          <span className="text-ink-muted">
-            土台 {neighbors.prior.length} 本・発展 {neighbors.derivative.length} 本
-          </span>
-          <a href="#paper-neighbors-title" className="text-accent-strong underline">
-            一覧を見る
-          </a>
-        </p>
-      )}
+      {!wideBar && selectedBar}
 
       <p id="theme-after-tree" tabIndex={-1} className="mt-2 text-xs text-ink-subtle">
         {view === "tree"

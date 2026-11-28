@@ -6,6 +6,11 @@ follows [Semantic Versioning](https://semver.org/) and the
 
 ## [Unreleased]
 
+### Fixed — PC で「選択中」の帯を図の枠の上端に置き、カードを押したときの再センタリングを止める（#521）
+
+- 画面幅 640px 以上では、帯を図の枠の先頭にある高さ 0 の sticky な枠（`top-2`）に置く。従来は画面の下端に固定していたため、1280×800 で画面下端にまたがるカードを押すと帯がそのカードを 34px 覆っていた。640px 未満（スマホ）は従来どおり木の下に置く。
+- パーマリンクのスクロールは、ページを開いたときの URL の id だけを対象にする。カードを押して URL に書き戻された `?focus=` で、図の枠が押したカードへ再センタリングされていた（LoRA で 157px）。
+
 ### Changed — 公開の checkout を全履歴の取得に（#570）
 
 - CI で測ると、runner の浅い（depth 1）checkout が 21〜30 秒、全履歴が 5〜6 秒だった（同じ job で 3 回ずつ交互に）。pages-release の validate・build・deploy・smoke・record と、theme-on-demand の生成 job の checkout を `fetch-depth: 0` にした。検査・ref・権限は変えていない。見込みは公開 1 回あたり最大 約 100 秒の短縮。
