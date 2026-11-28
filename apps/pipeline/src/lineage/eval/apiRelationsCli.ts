@@ -186,10 +186,12 @@ let lastS2 = 0;
 async function cachedJson(
   cacheDir: string,
   url: string,
-  init: { method?: string; body?: string; mailto?: string } = {},
+  init: { method?: string; body?: string; mailto?: string; cacheKeyUrl?: string } = {},
 ): Promise<unknown> {
+  // `cacheKeyUrl` keeps a request's historical cache key when its URL changed
+  // without changing the answer (#558: OpenAlex `mailto` dropped).
   const key = createHash("sha256")
-    .update(`${init.method ?? "GET"} ${url} ${init.body ?? ""}`)
+    .update(`${init.method ?? "GET"} ${init.cacheKeyUrl ?? url} ${init.body ?? ""}`)
     .digest("hex");
   const file = join(cacheDir, "http", `${key}.json`);
   if (existsSync(file)) return JSON.parse(readFileSync(file, "utf-8")).body;
@@ -311,7 +313,7 @@ async function referencesOf(s2Id: string, cacheDir: string, mailto: string): Pro
   return all;
 }
 
-async function openalexReferenced(
+export async function openalexReferenced(
   ids: string[],
   cacheDir: string,
   mailto: string,
@@ -320,10 +322,12 @@ async function openalexReferenced(
   const shorts = ids.filter((i) => i.startsWith("openalex:")).map((i) => i.slice(9));
   for (let i = 0; i < shorts.length; i += 50) {
     const chunk = shorts.slice(i, i + 50);
-    const r = (await cachedJson(
-      cacheDir,
-      `${OA}/works?filter=openalex_id:${chunk.join("|")}&select=id,referenced_works&per_page=50&mailto=${encodeURIComponent(mailto)}`,
-    )) as { results?: { id: string; referenced_works?: string[] }[] } | null;
+    // #558: OpenAlex ignores `mailto` (polite pool retired), so it is no longer
+    // sent; the cache key is still the pre-#558 URL so existing entries hit.
+    const url = `${OA}/works?filter=openalex_id:${chunk.join("|")}&select=id,referenced_works&per_page=50`;
+    const r = (await cachedJson(cacheDir, url, {
+      cacheKeyUrl: `${url}&mailto=${encodeURIComponent(mailto)}`,
+    })) as { results?: { id: string; referenced_works?: string[] }[] } | null;
     for (const w of r?.results ?? []) {
       out.set(
         `openalex:${w.id.split("/").at(-1)}`,

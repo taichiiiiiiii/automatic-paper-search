@@ -235,8 +235,15 @@ describe("#573 (e) no URL, e-mail or key in the log", () => {
     const urls: string[] = [];
     const deps = { ...oaDeps(c.logger, urls), cacheDir: tmp("seedlog-cache-"), s2ApiKey: SECRET };
     await discoverSeedsOpenalexPrimary(PRIMARY, deps);
-    // The request itself did carry the e-mail (the test would be vacuous otherwise).
-    expect(urls.some((u) => u.includes("mailto="))).toBe(true);
+    // The e-mail IS handed to the code (otherwise this test would be vacuous),
+    // and since #558 it reaches neither the request URL nor the log.
+    expect(deps.email).toBe(EMAIL);
+    expect(urls.length).toBeGreaterThan(0);
+    for (const u of urls) {
+      expect(u).not.toContain("mailto");
+      expect(u).not.toContain(EMAIL);
+      expect(u).not.toContain(encodeURIComponent(EMAIL));
+    }
     expect(c.info.length).toBeGreaterThan(0);
     for (const line of c.info) {
       expect(line).not.toMatch(/https?:\/\//);
@@ -250,6 +257,7 @@ describe("#573 (e) no URL, e-mail or key in the log", () => {
   it("keeps the S2 key out of the log when the S2 search fallback actually sends it", async () => {
     const c = capture();
     const sentKeys: string[] = [];
+    const sentUrls: string[] = [];
     const s2Hit = {
       paperId: "a".repeat(40),
       title: "Prompt Tuning for Frozen Language Models",
@@ -264,6 +272,7 @@ describe("#573 (e) no URL, e-mail or key in the log", () => {
       fetchImpl: async (url: string, init?: FetchInit): Promise<HttpResponseLike> => {
         const key = (init?.headers as Record<string, string> | undefined)?.["x-api-key"];
         if (key) sentKeys.push(key);
+        sentUrls.push(url);
         if (url.includes("semanticscholar.org")) return jsonResp(200, { data: [s2Hit] });
         return jsonResp(500, {});
       },
@@ -275,6 +284,14 @@ describe("#573 (e) no URL, e-mail or key in the log", () => {
     };
     await discoverSeedsOpenalexPrimary({ ...PRIMARY, s2SearchFallback: true }, deps);
     expect(sentKeys).toContain(SECRET);
+    // #558: the e-mail is in deps but no request (OpenAlex or S2) carries it.
+    expect(deps.email).toBe(EMAIL);
+    expect(sentUrls.some((u) => u.includes("openalex.org"))).toBe(true);
+    for (const u of sentUrls) {
+      expect(u).not.toContain("mailto");
+      expect(u).not.toContain(EMAIL);
+      expect(u).not.toContain(encodeURIComponent(EMAIL));
+    }
     expect(c.info.some((l) => l.startsWith("seed rank:"))).toBe(true);
     for (const line of [...c.info, ...c.warn]) {
       expect(line).not.toContain(SECRET);

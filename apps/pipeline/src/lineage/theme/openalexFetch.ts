@@ -127,11 +127,15 @@ function get(
   );
 }
 
+/** Formerly added `mailto=<deps.email>`. OpenAlex retired the polite pool
+ * and ignores `mailto` (#558), so the e-mail is no longer sent; the hook
+ * stays so every OpenAlex query in this module still goes through one place.
+ * No disk cache key depends on these params (this module caches nothing). */
 function withEmail(
   params: Record<string, string | number | boolean | undefined>,
-  deps: OpenAlexDeps,
+  _deps: OpenAlexDeps,
 ): Record<string, string | number | boolean | undefined> {
-  return deps.email ? { ...params, mailto: deps.email } : params;
+  return params;
 }
 
 export interface BuildCompletenessLike {

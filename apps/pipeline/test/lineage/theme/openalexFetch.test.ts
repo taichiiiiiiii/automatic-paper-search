@@ -47,18 +47,22 @@ function mkOaWork(
 }
 
 describe("discoverSeedsViaOpenalex", () => {
-  it("does not override sort (default relevance), and sends search/mailto/filter", async () => {
+  it("does not override sort (default relevance), sends search/filter and no mailto (#558)", async () => {
     const captured: Array<Record<string, unknown>> = [];
-    const deps = depsFor(async (url) => {
-      captured.push(Object.fromEntries(new URL(url).searchParams.entries()));
-      return jsonResp(200, { results: [] });
-    });
+    const deps = {
+      ...depsFor(async (url) => {
+        captured.push(Object.fromEntries(new URL(url).searchParams.entries()));
+        return jsonResp(200, { results: [] });
+      }),
+      email: "contact@example.org",
+    };
     await discoverSeedsViaOpenalex({ query: "Chain of Thought", topN: 5, sinceYear: 2018 }, deps);
     expect(captured).toHaveLength(1);
     const params = captured[0] as Record<string, string>;
     expect(params.sort).toBeUndefined();
     expect(params.search).toBe("Chain of Thought");
     expect(params.filter).toContain("primary_topic.field.id:fields/17");
+    expect(params.mailto).toBeUndefined();
   });
 
   it("rejects a result with no usable OpenAlex id", async () => {

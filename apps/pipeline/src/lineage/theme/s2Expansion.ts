@@ -216,7 +216,7 @@ export async function mapS2PapersToOpenalex(
       filter: `doi:${chunk.join("|")}`,
       "per-page": 200,
     };
-    if (deps.email) params.mailto = deps.email;
+    // No `mailto`: OpenAlex ignores it since the polite pool was retired (#558).
     const resp = await requestWithRetry(
       {
         method: "GET",

@@ -139,7 +139,7 @@ function noopLogger() {
   return createLogger("cli-e2e-test", { level: "ERROR" });
 }
 
-it("real run: .env secrets reach the real fetch adapter (S2 x-api-key, OpenAlex mailto), correct per-source timeouts, embedding-unavailable Stage 3 decision, SMTP-unavailable Stage export decision", async () => {
+it("real run: .env secrets reach the real fetch adapter (S2 x-api-key; OpenAlex gets no mailto, #558), correct per-source timeouts, embedding-unavailable Stage 3 decision, SMTP-unavailable Stage export decision", async () => {
   const configPath = writeConfigAndEnv({ embeddingEnabled: true, emailEnabled: true });
 
   const { fetchImpl, calls } = makeFakeFetch();
@@ -168,9 +168,13 @@ it("real run: .env secrets reach the real fetch adapter (S2 x-api-key, OpenAlex 
   expect(s2Call?.headers["x-api-key"]).toBe("test-s2-key");
   expect(s2Call?.timeoutMs).toBe(10_000);
 
-  // OpenAlex: mailto query param from .env, 10s timeout.
+  // OpenAlex: 10s timeout. #558: OpenAlex retired the `mailto` polite pool,
+  // so the .env contact e-mail (PAPERPILOT_OPENALEX_EMAIL) must NOT be sent.
   const openalexCall = calls.find((c) => c.url.includes("api.openalex.org"));
-  expect(openalexCall?.url).toContain("mailto=test%40example.com");
+  expect(openalexCall).toBeDefined();
+  expect(openalexCall?.url).not.toContain("mailto");
+  expect(openalexCall?.url).not.toContain("test%40example.com");
+  expect(openalexCall?.url).not.toContain("test@example.com");
   expect(openalexCall?.timeoutMs).toBe(10_000);
 
   // #26 decision: `embedding.enabled: true` with no real encoder wired is
